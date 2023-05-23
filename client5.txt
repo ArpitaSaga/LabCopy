@@ -1,0 +1,80 @@
+//client
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+int main(){
+	char *ip = "127.0.0.1";
+	int port = 5560;
+	int sock;
+	struct sockaddr_in addr;
+	socklen_t addr_size;
+	char buffer[1024];
+	int n;
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock < 0){
+		perror("[-]Socket error");
+		exit(1);
+	}
+	printf("[+]TCP server socket created.\n");
+	memset(&addr, '\0', sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_port = port;
+	addr.sin_addr.s_addr = inet_addr(ip);
+	connect(sock, (struct sockaddr*)&addr, sizeof(addr));
+	printf("Connected to the server.\n");
+	while (1) {
+		bzero(buffer, 1024);
+		printf("Enter two numbers : \n");
+		int num1, num2;
+		scanf("%d %d", &num1, &num2);
+		sprintf(buffer,"%d %d", num1,num2);
+		//gets(buffer);
+		//int val = strcmp(buffer,"stop");
+		if(num1 == -1 && num2 == -1) {
+		printf("Client: %s\n", buffer);
+		send(sock, buffer, strlen(buffer), 0); 
+		close(sock);
+		printf("Disconnected from the server.\n");
+		//return 0;
+		break;
+	}
+//strcpy(buffer, "HELLO, THIS IS CLIENT.");
+//printf("Client: %s\n", buffer);
+	send(sock, buffer, strlen(buffer), 0);
+	printf("Request Sent To Server.\n");
+	bzero(buffer, 1024);
+	recv(sock, buffer, sizeof(buffer), 0);
+	printf("Server:\n %s\n", buffer);
+	}
+	return 0;
+}
+output:
+
+[+]TCP server socket created.
+Connected to the server.
+Enter two numbers : 
+11 12
+Request Sent To Server.
+Server:
+ Sum : 23
+Difference : -1
+Multiplication : 132
+Division: 0
+
+Enter two numbers : 
+34 11
+Request Sent To Server.
+Server:
+ Sum : 45
+Difference : 23
+Multiplication : 374
+Division: 3
+
+Enter two numbers :
+
+
+
+
+
